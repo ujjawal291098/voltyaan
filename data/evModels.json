@@ -1,0 +1,20 @@
+[
+  {
+    "name": "Tata Nexon EV",
+    "price": 1500000,
+    "resale": 78,
+    "battery": 92
+  },
+  {
+    "name": "Ola S1 Pro",
+    "price": 130000,
+    "resale": 82,
+    "battery": 89
+  },
+  {
+    "name": "MG ZS EV",
+    "price": 2400000,
+    "resale": 75,
+    "battery": 87
+  }
+]
