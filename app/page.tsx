@@ -3,7 +3,7 @@
 import dynamic from "next/dynamic";
 import Image from "next/image";
 
-const LeafletMap = dynamic(() => import("../components/LeafletMap"), {
+const LeafletMap = dynamic(() => import("./components/LeafletMap"), {
   ssr: false,
   loading: () => <p className="text-gray-500">Loading map...</p>,
 });
