@@ -5,7 +5,7 @@ import evModels from '@/data/evModels.json';
 export default function ValuationPage() {
   const [selectedModel, setSelectedModel] = useState('');
   const [mileage, setMileage] = useState('');
-  const [battery, setBattery] = useState('');
+  const [battery, setBattery] = useState('80');
   const [valuation, setValuation] = useState<number | null>(null);
   const [error, setError] = useState('');
 
@@ -40,6 +40,7 @@ export default function ValuationPage() {
           ⚡ Check My EV Value
         </h1>
 
+        {/* EV Model Selection */}
         <label className="block mb-2 text-gray-700 font-medium">Select EV Model</label>
         <select
           value={selectedModel}
@@ -52,24 +53,33 @@ export default function ValuationPage() {
           ))}
         </select>
 
-        <input
-          type="number"
-          placeholder="Mileage (km)"
-          value={mileage}
-          onChange={(e) => setMileage(e.target.value)}
-          className="w-full border border-gray-300 rounded-lg p-2 mb-4 focus:ring-2 focus:ring-emerald-400"
-          required
-        />
+        {/* Mileage Input */}
+        <label className="block mb-2 text-gray-700 font-medium">Mileage</label>
+        <div className="flex items-center gap-2 mb-4">
+          <input
+            type="number"
+            placeholder="Enter mileage"
+            value={mileage}
+            onChange={(e) => setMileage(e.target.value)}
+            step={5000}
+            className="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-emerald-400"
+          />
+          <span className="text-gray-600 font-medium">km</span>
+        </div>
 
+        {/* Battery Slider */}
+        <label className="block mb-2 text-gray-700 font-medium">Battery Health: {battery}%</label>
         <input
-          type="number"
-          placeholder="Battery Health (%)"
+          type="range"
+          min="50"
+          max="100"
+          step="1"
           value={battery}
           onChange={(e) => setBattery(e.target.value)}
-          className="w-full border border-gray-300 rounded-lg p-2 mb-4 focus:ring-2 focus:ring-emerald-400"
-          required
+          className="w-full accent-emerald-600 mb-6 cursor-pointer"
         />
 
+        {/* Valuation Button */}
         <button
           onClick={handleValuation}
           className="bg-emerald-600 hover:bg-emerald-700 text-white w-full py-2 rounded-lg font-semibold transition-all"
@@ -77,8 +87,10 @@ export default function ValuationPage() {
           Get Valuation
         </button>
 
+        {/* Error Display */}
         {error && <p className="text-red-500 mt-4 text-center">{error}</p>}
 
+        {/* Valuation Result */}
         {valuation && !error && (
           <div className="mt-6 bg-emerald-50 border border-emerald-200 rounded-xl p-4 text-center">
             <h2 className="text-2xl font-semibold text-emerald-700">Estimated Value</h2>
