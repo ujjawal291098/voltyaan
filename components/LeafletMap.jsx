@@ -1,21 +1,23 @@
 "use client";
 
 import { useEffect } from "react";
-import "leaflet/dist/leaflet.css";
 
-// 🚨 import Leaflet only inside useEffect to avoid SSR “window is not defined”
+// ✅ Import CSS only inside useEffect
 export default function LeafletMap() {
   useEffect(() => {
-    // Make sure we only run this in the browser
+    // Ensure code runs only in browser
     if (typeof window === "undefined") return;
 
-    // Dynamically import leaflet only on the client
-    import("leaflet").then((L) => {
-      const map = L.map("map").setView([20.5937, 78.9629], 5); // India coords
+    // Dynamically import both leaflet and its CSS
+    (async () => {
+      const L = await import("leaflet");
+      await import("leaflet/dist/leaflet.css");
+
+      const map = L.map("map").setView([20.5937, 78.9629], 5);
       L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
         attribution: "&copy; OpenStreetMap contributors",
       }).addTo(map);
-    });
+    })();
   }, []);
 
   return (
