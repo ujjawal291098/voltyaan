@@ -25,12 +25,12 @@ export default function Home() {
         />
 
         <h1 className="text-4xl font-bold text-zinc-900 dark:text-white mb-4">
-          ⚡ Voltyaan — Smarter Journeys. Powered by Volts.
+          ⚡ Voltyaan - Smarter Journeys. Powered by Volts.
         </h1>
 
         <p className="max-w-2xl text-lg text-zinc-600 dark:text-zinc-400 mb-8">
           India’s EV intelligence and resale insight platform.  
-          Discover charging points, vehicle insights, and more — all free.
+          Discover vehicle insights, resale, charging points, and more - all free.
         </p>
 
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -56,7 +56,7 @@ export default function Home() {
         </h2>
         <LeafletMap />
         <p className="text-zinc-500 mt-4 text-sm">
-          Explore EV charging points across India — powered by Leaflet & OpenStreetMap.
+          Built by UK
         </p>
       </section>
 
