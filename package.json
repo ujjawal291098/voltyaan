@@ -17,4 +17,10 @@
     "leaflet": "1.9.4",
     "html2pdf.js": "0.10.1"
   }
+  "devDependencies": {
+  "autoprefixer": "^10.4.19",
+  "postcss": "^8.4.39",
+  "tailwindcss": "^3.4.13",
+  "@tailwindcss/postcss": "^1.0.0"
+}
 }
