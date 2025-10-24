@@ -3,7 +3,8 @@
 import dynamic from "next/dynamic";
 import Image from "next/image";
 
-const LeafletMap = dynamic(() => import("../components/LeafletMap"), {
+// ✅ Dynamically import the map (no SSR)
+const ChargingMap = dynamic(() => import("../components/ChargingMap"), {
   ssr: false,
   loading: () => <p className="text-gray-500">Loading map...</p>,
 });
@@ -22,13 +23,14 @@ export default function Home() {
         />
 
         <h1 className="text-3xl font-semibold text-black dark:text-zinc-50 mt-10">
-          Voltyaan ⚡ — EV Map Explorer
+          Voltyaan ⚡ — EV Charging Map
         </h1>
 
-        <LeafletMap />
+        <ChargingMap />
 
         <p className="text-zinc-500 mt-6">
-          Interactive EV charging station map built with Next.js + Leaflet.
+          Explore EV charging points across India, powered by Leaflet and
+          Next.js.
         </p>
       </main>
     </div>
