@@ -1,20 +1,62 @@
 [
   {
-    "name": "Tata Nexon EV",
-    "price": 1500000,
-    "resale": 78,
-    "battery": 92
+    "model": "Tata Nexon EV",
+    "basePrice": 1400000,
+    "range": 312,
+    "batteryCapacity": 30.2
   },
   {
-    "name": "Ola S1 Pro",
-    "price": 130000,
-    "resale": 82,
-    "battery": 89
+    "model": "Tata Tiago EV",
+    "basePrice": 900000,
+    "range": 250,
+    "batteryCapacity": 24
   },
   {
-    "name": "MG ZS EV",
-    "price": 2400000,
-    "resale": 75,
-    "battery": 87
+    "model": "MG ZS EV",
+    "basePrice": 2300000,
+    "range": 461,
+    "batteryCapacity": 50.3
+  },
+  {
+    "model": "Hyundai Kona Electric",
+    "basePrice": 2350000,
+    "range": 452,
+    "batteryCapacity": 39.2
+  },
+  {
+    "model": "BYD Atto 3",
+    "basePrice": 3390000,
+    "range": 521,
+    "batteryCapacity": 60.5
+  },
+  {
+    "model": "Mahindra XUV400",
+    "basePrice": 1600000,
+    "range": 456,
+    "batteryCapacity": 39.4
+  },
+  {
+    "model": "Citroen eC3",
+    "basePrice": 1150000,
+    "range": 320,
+    "batteryCapacity": 29.2
+  },
+  {
+    "model": "Kia EV6",
+    "basePrice": 6100000,
+    "range": 708,
+    "batteryCapacity": 77.4
+  },
+  {
+    "model": "Volvo XC40 Recharge",
+    "basePrice": 5800000,
+    "range": 418,
+    "batteryCapacity": 78
+  },
+  {
+    "model": "BMW i4",
+    "basePrice": 7300000,
+    "range": 590,
+    "batteryCapacity": 83.9
   }
 ]
