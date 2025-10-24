@@ -1,97 +1,91 @@
-"use client";
-import { useState } from "react";
+'use client';
+import { useState } from 'react';
+import evModels from '@/data/evModels.json';
 
 export default function ValuationPage() {
-  const [model, setModel] = useState("");
-  const [year, setYear] = useState("");
-  const [mileage, setMileage] = useState("");
-  const [battery, setBattery] = useState("");
+  const [selectedModel, setSelectedModel] = useState('');
+  const [mileage, setMileage] = useState('');
+  const [battery, setBattery] = useState('');
   const [valuation, setValuation] = useState<number | null>(null);
+  const [error, setError] = useState('');
 
-  const calculateValue = () => {
-    // Simple EV valuation logic (example formula)
-    const baseValue = 2000000; // ₹20L base
-    const age = new Date().getFullYear() - Number(year || new Date().getFullYear());
-    const depreciation = age * 0.08; // 8% depreciation per year
-    const batteryFactor = (Number(battery) || 100) / 100;
-    const mileageFactor = 1 - (Number(mileage) || 0) / 200000;
+  const handleValuation = () => {
+    if (!selectedModel || !mileage || !battery) {
+      setError('⚠️ Please fill all fields to calculate valuation.');
+      setValuation(null);
+      return;
+    }
 
-    const finalValue = baseValue * batteryFactor * mileageFactor * (1 - depreciation);
-    setValuation(Math.max(finalValue, 100000)); // min value ₹1L
+    setError('');
+
+    const modelData = evModels.find(m => m.model === selectedModel);
+    if (!modelData) {
+      setError('Model data not found.');
+      return;
+    }
+
+    const { basePrice, range } = modelData;
+    const mileageFactor = Math.max(0.5, 1 - Number(mileage) / 100000);
+    const batteryFactor = Number(battery) / 100;
+    const rangeFactor = range / 500;
+
+    const estimatedValue = basePrice * mileageFactor * batteryFactor * rangeFactor;
+    setValuation(Math.round(estimatedValue));
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-4 py-16 bg-zinc-50 dark:bg-black text-black dark:text-zinc-50">
-      <h1 className="text-3xl font-bold mb-8 text-center">
-        🔋 EV Valuation Estimator
-      </h1>
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-slate-50 to-slate-200 p-6">
+      <div className="bg-white shadow-2xl rounded-2xl p-8 w-full max-w-lg">
+        <h1 className="text-3xl font-semibold text-emerald-700 mb-6 text-center">
+          ⚡ Check My EV Value
+        </h1>
 
-      <div className="w-full max-w-md bg-white dark:bg-zinc-900 rounded-2xl shadow-lg p-6 space-y-4">
-        <div>
-          <label className="block mb-1 font-medium">EV Model</label>
-          <input
-            type="text"
-            placeholder="e.g., Tata Nexon EV"
-            value={model}
-            onChange={(e) => setModel(e.target.value)}
-            className="w-full border rounded-lg px-4 py-2 bg-white dark:bg-zinc-800"
-            required
-          />
-        </div>
+        <label className="block mb-2 text-gray-700 font-medium">Select EV Model</label>
+        <select
+          value={selectedModel}
+          onChange={(e) => setSelectedModel(e.target.value)}
+          className="w-full border border-gray-300 rounded-lg p-2 mb-4 focus:ring-2 focus:ring-emerald-400"
+        >
+          <option value="">-- Choose your EV --</option>
+          {evModels.map((m) => (
+            <option key={m.model} value={m.model}>{m.model}</option>
+          ))}
+        </select>
 
-        <div>
-          <label className="block mb-1 font-medium">Manufacture Year</label>
-          <input
-            type="number"
-            placeholder="e.g., 2021"
-            value={year}
-            onChange={(e) => setYear(e.target.value)}
-            className="w-full border rounded-lg px-4 py-2 bg-white dark:bg-zinc-800"
-            required
-          />
-        </div>
+        <input
+          type="number"
+          placeholder="Mileage (km)"
+          value={mileage}
+          onChange={(e) => setMileage(e.target.value)}
+          className="w-full border border-gray-300 rounded-lg p-2 mb-4 focus:ring-2 focus:ring-emerald-400"
+          required
+        />
 
-        <div>
-          <label className="block mb-1 font-medium">Mileage (km)</label>
-          <input
-            type="number"
-            placeholder="e.g., 15000"
-            value={mileage}
-            onChange={(e) => setMileage(e.target.value)}
-            className="w-full border rounded-lg px-4 py-2 bg-white dark:bg-zinc-800"
-            required
-          />
-        </div>
-
-        <div>
-          <label className="block mb-1 font-medium">Battery Health (%)</label>
-          <input
-            type="number"
-            placeholder="e.g., 90"
-            value={battery}
-            onChange={(e) => setBattery(e.target.value)}
-            className="w-full border rounded-lg px-4 py-2 bg-white dark:bg-zinc-800"
-            required
-          />
-        </div>
+        <input
+          type="number"
+          placeholder="Battery Health (%)"
+          value={battery}
+          onChange={(e) => setBattery(e.target.value)}
+          className="w-full border border-gray-300 rounded-lg p-2 mb-4 focus:ring-2 focus:ring-emerald-400"
+          required
+        />
 
         <button
-          onClick={calculateValue}
-          className="w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition"
+          onClick={handleValuation}
+          className="bg-emerald-600 hover:bg-emerald-700 text-white w-full py-2 rounded-lg font-semibold transition-all"
         >
-          Calculate Valuation
+          Get Valuation
         </button>
 
-        {valuation && (
-          <div className="mt-6 text-center bg-green-100 dark:bg-green-800 p-4 rounded-lg">
-            <h2 className="text-xl font-semibold">Estimated Value:</h2>
-            <p className="text-2xl font-bold mt-2">
-              ₹ {valuation.toLocaleString("en-IN")}
-            </p>
+        {error && <p className="text-red-500 mt-4 text-center">{error}</p>}
+
+        {valuation && !error && (
+          <div className="mt-6 bg-emerald-50 border border-emerald-200 rounded-xl p-4 text-center">
+            <h2 className="text-2xl font-semibold text-emerald-700">Estimated Value</h2>
+            <p className="text-3xl font-bold mt-2">₹{valuation.toLocaleString()}</p>
           </div>
         )}
       </div>
     </div>
   );
 }
-
