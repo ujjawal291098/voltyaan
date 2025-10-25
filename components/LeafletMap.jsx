@@ -10,7 +10,7 @@ export default function LeafletMap() {
       const L = await import("leaflet");
       await import("leaflet/dist/leaflet.css");
 
-      // ✅ Fix Leaflet icon loading issue in Next.js
+      // Fix icon path issues
       delete L.Icon.Default.prototype._getIconUrl;
       L.Icon.Default.mergeOptions({
         iconRetinaUrl:
@@ -21,39 +21,41 @@ export default function LeafletMap() {
           "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
       });
 
-      // Remove existing map (for dev reload)
+      // Remove previous map instance (for hot reload)
       const existingMap = L.DomUtil.get("charging-map");
       if (existingMap !== null) existingMap._leaflet_id = null;
 
-      // ✅ Start focused on North India (Delhi region)
-      const map = L.map("charging-map").setView([28.6139, 77.209], 7);
+      // ✅ Focus tightly on Delhi NCR
+      const map = L.map("charging-map").setView([28.6139, 77.209], 10);
 
-      // Add OpenStreetMap tiles
+      // Add OpenStreetMap layer
       L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
         attribution: "&copy; OpenStreetMap contributors",
       }).addTo(map);
 
-      // ✅ Custom green heart icon
-      const evIcon = L.icon({
+      // ✅ Custom green battery icon
+      const batteryIcon = L.icon({
         iconUrl:
-          "https://cdn-icons-png.flaticon.com/512/833/833472.png", // green heart
-        iconSize: [30, 30],
-        iconAnchor: [15, 30],
-        popupAnchor: [0, -25],
+          "https://cdn-icons-png.flaticon.com/512/3103/3103446.png", // green battery icon
+        iconSize: [32, 32],
+        iconAnchor: [16, 32],
+        popupAnchor: [0, -28],
       });
 
-      // Helper function to add stations
+      // Helper to add station markers
       const addStations = (stations, label = "Live") => {
         stations.forEach((s) => {
-          L.marker([s.lat, s.lon], { icon: evIcon })
+          L.marker([s.lat, s.lon], { icon: batteryIcon })
             .addTo(map)
             .bindPopup(
-              `<b>${s.name || "EV Station"}</b><br>${s.operator || ""}<br><i>${label} data</i>`
+              `<b>${s.name || "EV Charging Station"}</b><br>${
+                s.operator || ""
+              }<br><i>${label} data</i>`
             );
         });
       };
 
-      // Overpass API for live EV stations
+      // Overpass API (EV charging stations in India)
       const url =
         "https://overpass-api.de/api/interpreter?data=[out:json][timeout:25];area[name='India']->.a;(node['amenity'='charging_station'](area.a););out;";
 
@@ -79,10 +81,11 @@ export default function LeafletMap() {
       } catch (err) {
         console.warn("⚠️ Overpass failed, loading fallback data", err);
         const fallbackStations = [
-          { lat: 28.6139, lon: 77.209, name: "Delhi EV Hub", operator: "Voltyaan" },
-          { lat: 29.4727, lon: 77.7085, name: "Meerut PlugPoint", operator: "Voltyaan" },
-          { lat: 28.4089, lon: 77.3178, name: "Gurgaon EV Station", operator: "Voltyaan" },
-          { lat: 26.9124, lon: 75.7873, name: "Jaipur Charge Zone", operator: "Voltyaan" },
+          { lat: 28.6139, lon: 77.209, name: "Connaught Place EV Hub" },
+          { lat: 28.5355, lon: 77.391, name: "Noida Supercharge" },
+          { lat: 28.4089, lon: 77.3178, name: "Gurgaon ChargePoint" },
+          { lat: 28.7041, lon: 77.1025, name: "West Delhi PlugZone" },
+          { lat: 28.6692, lon: 77.4538, name: "Ghaziabad FastCharge" },
         ];
         addStations(fallbackStations, "Fallback");
       }
@@ -93,7 +96,7 @@ export default function LeafletMap() {
     <div
       id="charging-map"
       style={{
-        height: "450px",
+        height: "500px",
         width: "100%",
         borderRadius: "12px",
         marginTop: "1rem",
