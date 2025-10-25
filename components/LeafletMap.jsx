@@ -10,38 +10,53 @@ export default function LeafletMap() {
       const L = await import("leaflet");
       await import("leaflet/dist/leaflet.css");
 
-      // Clear existing map on hot reload
+      // ✅ Fix marker icon issue (Leaflet + Next.js)
+      delete L.Icon.Default.prototype._getIconUrl;
+      L.Icon.Default.mergeOptions({
+        iconRetinaUrl:
+          "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png",
+        iconUrl:
+          "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png",
+        shadowUrl:
+          "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
+      });
+
+      // Remove old map (hot reload)
       const existingMap = L.DomUtil.get("charging-map");
-      if (existingMap !== null) {
-        existingMap._leaflet_id = null;
-      }
+      if (existingMap !== null) existingMap._leaflet_id = null;
 
-      // Initialize the map centered on India
+      // Init map centered on India
       const map = L.map("charging-map").setView([20.5937, 78.9629], 5);
-
-      // Add OpenStreetMap tile layer
       L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
         attribution: "&copy; OpenStreetMap contributors",
       }).addTo(map);
 
-      // Function to add markers
+      // Custom green EV icon
+      const evIcon = L.icon({
+        iconUrl:
+          "https://cdn-icons-png.flaticon.com/512/2972/2972185.png", // ✅ EV plug icon
+        iconSize: [30, 30],
+        iconAnchor: [15, 30],
+        popupAnchor: [0, -25],
+      });
+
+      // Add markers helper
       const addStations = (stations, label = "Live") => {
-        stations.forEach((station) => {
-          const marker = L.marker([station.lat, station.lon]).addTo(map);
-          marker.bindPopup(
-            `<b>${station.name || "EV Station"}</b><br/>
-             ${station.operator || ""}<br/>
-             <i>${label} data</i>`
-          );
+        stations.forEach((s) => {
+          L.marker([s.lat, s.lon], { icon: evIcon })
+            .addTo(map)
+            .bindPopup(
+              `<b>${s.name || "EV Station"}</b><br>${s.operator || ""}<br><i>${label} data</i>`
+            );
         });
       };
 
-      // Try fetching live stations from Overpass API
-      const overpassURL =
+      // Overpass API call
+      const url =
         "https://overpass-api.de/api/interpreter?data=[out:json][timeout:25];area[name='India']->.a;(node['amenity'='charging_station'](area.a););out;";
 
       try {
-        const res = await fetch(overpassURL);
+        const res = await fetch(url);
         const data = await res.json();
 
         if (data?.elements?.length) {
@@ -54,23 +69,18 @@ export default function LeafletMap() {
               operator: el.tags?.operator,
             }));
           addStations(stations, "Live");
-          console.log(`✅ Loaded ${stations.length} live EV stations`);
-          return;
+          console.log(`✅ Loaded ${stations.length} live EV points`);
         } else {
           throw new Error("Empty Overpass response");
         }
       } catch (err) {
-        console.warn("⚠️ Overpass API failed, using fallback data", err);
-
-        // Fallback: few Indian cities with dummy points
+        console.warn("⚠️ Overpass failed, using fallback", err);
         const fallbackStations = [
-          { lat: 28.6139, lon: 77.209, name: "Delhi EV Hub", operator: "Voltyaan Demo" },
-          { lat: 19.076, lon: 72.8777, name: "Mumbai EV Station", operator: "Voltyaan Demo" },
-          { lat: 12.9716, lon: 77.5946, name: "Bengaluru FastCharge", operator: "Voltyaan Demo" },
-          { lat: 13.0827, lon: 80.2707, name: "Chennai Supercharger", operator: "Voltyaan Demo" },
-          { lat: 22.5726, lon: 88.3639, name: "Kolkata GreenPoint", operator: "Voltyaan Demo" },
+          { lat: 28.6139, lon: 77.209, name: "Delhi EV Hub", operator: "Voltyaan" },
+          { lat: 19.076, lon: 72.8777, name: "Mumbai EV Station", operator: "Voltyaan" },
+          { lat: 12.9716, lon: 77.5946, name: "Bangalore ChargePoint", operator: "Voltyaan" },
+          { lat: 22.5726, lon: 88.3639, name: "Kolkata PlugIn", operator: "Voltyaan" },
         ];
-
         addStations(fallbackStations, "Fallback");
       }
     })();
